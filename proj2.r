@@ -17,16 +17,23 @@
 ## default value 10000
 # The function Pone returns the estimated success probability for a single prisoner
 # (based on simulations)
-Pone <- function(n,k,strategy,nreps.nreps=10000) {
+Pone <- function(n,k,strategy,nreps=10000) {
   choice <- rep(NA,n) ## Initialise a vector to store choices of the prisoner
   count <- 1 ## Initialise a counter for number of simulations
   s <- 0 ## Initialise a counter for number of successes
+  ## Create a vector u to store card numbers, cards were put into different 
+  ## boxes randomly with equal probabilities
+  ## If only 1 simulation is required,
+  if (nreps==1) {
+    u <- u_fix
+  }
+  ## Otherwise, we can start with any randomly generated card orders
+  else {
+    u <- sample(1:(2*n),size=2*n)
+  }
   ## Strategy 1
   if (strategy==1) {
-    while (count <= nreps.nreps) {
-      ## A vector to store card numbers, cards were put into different boxes randomly
-      ## with equal probabilities
-      u <- sample(1:(2*n),size=2*n)
+    while (count <= nreps) {
       choice[1] <- u[k] ## Start at the box with their number on it
       ## Repeat strategy 1 until the end of the game
       for (i in 2:n) {
@@ -37,16 +44,15 @@ Pone <- function(n,k,strategy,nreps.nreps=10000) {
         s <- s+1
       }
       count <- count+1 ## Update counter
+      # Reset card orders at the end of each simulation
+      u <- sample(1:(2*n),size=2*n)
     }
-    prob_one <- s/nreps.nreps ## Estimated success probability
+    prob_one <- s/nreps ## Estimated success probability
     return(prob_one) ## Return the estimated probability
   }
   ## Strategy 2
   else if (strategy==2) {
-    while (count <= nreps.nreps) {
-      ## A vector to store card numbers, cards were put into different boxes randomly
-      ## with equal probabilities
-      u <- sample(1:(2*n),size=2*n)
+    while (count <= nreps) {
       choice[1] <- sample(1:(2*n),size=1) ## Start at a random box
       ## Repeat strategy 1
       for (i in 2:n) {
@@ -57,16 +63,15 @@ Pone <- function(n,k,strategy,nreps.nreps=10000) {
         s <- s+1
       }
       count <- count+1 ## Update counter
+      # Reset card orders at the end of each simulation
+      u <- sample(1:(2*n),size=2*n)
     }
-    prob_one <- s/nreps.nreps ## Estimated success probability
+    prob_one <- s/nreps ## Estimated success probability
     return(prob_one) ## Return the estimated probability
   }
   ## Strategy 3
   else {
-    while (count <= nreps.nreps) {
-      ## A vector to store card numbers, cards were put into different boxes randomly
-      ## with equal probabilities
-      u <- sample(1:(2*n),size=2*n)
+    while (count <= nreps) {
       choice <- sample(1:(2*n),size=n) ## Choose n boxes at random
       ## Count number of successes
       if (is.element(k,choice)) {
@@ -75,19 +80,19 @@ Pone <- function(n,k,strategy,nreps.nreps=10000) {
       count <- count+1 ## Update counter
     }
   }
-  prob_one <- s/nreps.nreps ## Estimated success probability
+  prob_one <- s/nreps ## Estimated success probability
   return(prob_one) ## Return the estimated probability
 }
 
-# Function Pall for estimating the probability of prisoners getting released,
-# i.e., all prisoners finding their number
-Pall <- function(n,strategy,nreps.nreps=10000) {
+Pall <- function(n,strategy,nreps=10000) {
   result <- rep(NA,2*n) ## Initialise a vector to store results of prisoners
   count <- 1 ## Initialise a counter for number of simulations
   s <- 0 ## Initialise a counter for total number of successes
-  while (count <= nreps.nreps) {
+  while (count <= nreps) {
     for (k in 1:(2*n)) {
-      result[k] <- Pone(n,k,strategy,nreps.nreps=1)
+      set.seed(count)
+      u_fix <<- sample(1:(2*n),size=2*n)
+      result[k] <- Pone(n,k,strategy,nreps=1)
     }
     if (sum(result)==(2*n)) {
       s <- s+1
@@ -95,6 +100,6 @@ Pall <- function(n,strategy,nreps.nreps=10000) {
     count <- count+1 ## Update counter
     result <- rep(NA,2*n) ## Reset the result vector
   }
-  prob_all <- s/nreps.nreps ## Estimated success probability of all prisoners
+  prob_all <- s/nreps ## Estimated success probability of all prisoners
   return(prob_all) ## Return the estimated probability
 }

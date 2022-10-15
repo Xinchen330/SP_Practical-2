@@ -19,9 +19,9 @@
 # The function Pone returns the estimated success probability 
 # for a single prisoner (based on simulations)
 Pone <- function(n,k,strategy,nreps=10000) {
-  choice <- rep(NA,n)    ## Initialise a vector to store choices of the prisoner
-  count <- 1             ## Initialise a counter for number of simulations
-  s <- 0                 ## Initialise a counter for number of successes
+  choice <- rep(NA,n)              ## a vector to store choices of the prisoner
+  count <- 1                       ## a counter for number of simulations
+  s <- 0                           ## a counter for number of successes
   ## Create a vector u to store card numbers
   ## cards were put into different boxes randomly with equal probabilities
   ## If only 1 simulation is required,
@@ -35,33 +35,31 @@ Pone <- function(n,k,strategy,nreps=10000) {
   ## Strategy 1
   if (strategy==1) {
     while (count <= nreps) {
-      choice[1] <- u[k]  ## Start at the box with their number on it
-                         ## Repeat strategy 1 until the end of the game
+      choice[1] <- u[k]            ## Start at the box with their number on it
       for (i in 2:n) {
         choice[i] <- u[choice[i-1]]
         if (is.element(k,choice)) {
-          s <- s+1       ## Count number of successes
+          s <- s+1                 ## Count number of successes
           break
         }
         else{
           next
         }
       }
-      count <- count+1  ## Update counter
-      # Reset card orders at the end of each simulation
-      u <- sample(1:(2*n),size=2*n)
+      count <- count+1             ## Update counter
+      u <- sample(1:(2*n),size=2*n)## Reset card orders
     }
-    prob_one <- s/nreps ## Estimated success probability
-    return(prob_one)    ## Return the estimated probability
+    prob_one <- s/nreps            ## Estimated success probability
+    return(prob_one)               ## Return the estimated probability
   }
   ## Strategy 2
   else if (strategy==2) {
     while (count <= nreps) {
       choice[1] <- sample(1:(2*n),size=1) ## Start at a random box
       for (i in 2:n) {
-        choice[i] <- u[choice[i-1]]       ## Repeat strategy 1
+        choice[i] <- u[choice[i-1]]
         if (is.element(k,choice)) {
-          s <- s+1       ## Count number of successes
+          s <- s+1                        ## Count number of successes
           break
         }
         else{
@@ -90,9 +88,9 @@ Pone <- function(n,k,strategy,nreps=10000) {
 }
 
 Pall <- function(n,strategy,nreps=10000) {
-  result <- rep(NA,2*n)   ## Initialise a vector to store results of prisoners
-  count <- 1              ## Initialise a counter for number of simulations
-  s <- 0                  ## Initialise a counter for total number of successes
+  result <- rep(NA,2*n)                ## a vector to store results of prisoners
+  count <- 1                           ## a counter for number of simulations
+  s <- 0                               ## a counter for number of successes
   while (count <= nreps) {
     for (k in 1:(2*n)) {
       set.seed(count)
@@ -102,11 +100,11 @@ Pall <- function(n,strategy,nreps=10000) {
     if (sum(result)==(2*n)) {
       s <- s+1
     }
-    count <- count+1      ## Update counter
-    result <- rep(NA,2*n) ## Reset the result vector
+    count <- count+1                  ## Update counter
+    result <- rep(NA,2*n)             ## Reset the result vector
   }
-  prob_all <- s/nreps     ## Estimated success probability of all prisoners
-  return(prob_all)        ## Return the estimated probability
+  prob_all <- s/nreps         ## Estimated success probability of all prisoners
+  return(prob_all)            ## Return the estimated probability
 }
 start<-Sys.time();Pall(5,1);end<-Sys.time();runningtime<-end-start;cat(runningtime)
 start<-Sys.time();Pall(5,2);end<-Sys.time();runningtime<-end-start;cat(runningtime)

@@ -101,3 +101,28 @@ Pall <- function(n,strategy,nreps=10000) {
   prob_all <- s/nreps ## Estimated success probability of all prisoners
   return(prob_all) ## Return the estimated probability
 }
+
+card_loop <- function(cards) {
+  ## Initialize a vector to record whether a card number has been picked out
+  status <- rep(0,length(cards))
+  l_lengths <- c() ## A vector to store loop lengths
+  choice <- rep(0,length(cards))
+  while (is.element(0,status)) {
+    k <- min(which(status==0))
+    choice[1] <- cards[k]
+    for (i in 2:length(cards)) {
+      if (cards[choice[i-1]]!=k) {
+        choice[i] <- cards[choice[i-1]]
+      }
+      else {
+        choice[i] <- k
+        l <- choice[which(choice!=0)]
+        break
+      }
+    }
+    status[l] <- 1 ## Update status
+    l_lengths <- append(l_lengths,length(l))
+    choice <- rep(0,length(cards)) # Reset the choice vector
+  }
+  return (l_lengths)
+}

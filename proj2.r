@@ -102,32 +102,51 @@ Pall <- function(n,strategy,nreps=10000) {
   return(prob_all) ## Return the estimated probability
 }
 
+# Function card_loop for finding the number of loops and the length of each
+# loop in a sequence of randomly shuffled cards
+# Inputs:
+## cards -- A sequence of 2n randomly shuffled cards
+# The function card_loop returns a vector l_length which contains loop lengths
+# of the given card sequence
 card_loop <- function(cards) {
   ## Initialize a vector to record whether a card number has been picked out
-  status <- rep(0,length(cards))
-  l_lengths <- c() ## A vector to store loop lengths
+  ## Initial state was set to be 0, once a card has been picked out, its state
+  ## will be switched to 1
+  state <- rep(0,length(cards))
+  l_lengths <- c() ## Initialise a vector to store loop lengths
+  ## Initialise a vector to store cards being picked out
+  ## The length was set to be 2n mainly for speed considerations
   choice <- rep(0,length(cards))
-  while (is.element(0,status)) {
-    k <- min(which(status==0))
-    choice[1] <- cards[k]
+  ## While there are cards yet to be picked out, we should keep counting loops
+  while (is.element(0,state)) {
+    ## Start from the smallest card number that hasn't been selected
+    k <- min(which(state==0))
+    choice[1] <- cards[k] ## Make the first choice
+    ## If the first card happens to be k, the loop length will be 1
     if (choice[1]==k) {
+      ## The loop is given by the non-zero elements of the choice vector
       l <- choice[which(choice!=0)]
     }
+    ## Otherwise, we should keep drawing cards using strategy 1
     else {
       for (i in 2:length(cards)) {
+        ## Repeating strategy 1 until we find the card number k
         if (cards[choice[i-1]]!=k) {
           choice[i] <- cards[choice[i-1]]
         }
+        ## If our next card happens to be k
         else {
-          choice[i] <- k
+          choice[i] <- k ## Update the choice vector
+          ## Pick out the loop by extracting non-zero elements of the choice 
+          ## vector, and break the while loop
           l <- choice[which(choice!=0)]
           break
         }
       }
     }
-    status[l] <- 1 ## Update status
-    l_lengths <- append(l_lengths,length(l))
+    state[l] <- 1 ## Update states
+    l_lengths <- append(l_lengths,length(l)) ## Record the loop lengths
     choice <- rep(0,length(cards)) # Reset the choice vector
   }
-  return (l_lengths)
+  return (l_lengths) ## Return loop lengths
 }

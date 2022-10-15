@@ -60,9 +60,13 @@ Pone <- function(n,k,strategy,nreps=10000) {
       choice[1] <- sample(1:(2*n),size=1) ## Start at a random box
       for (i in 2:n) {
         choice[i] <- u[choice[i-1]]       ## Repeat strategy 1
-      }
-      if (is.element(k,choice)) {
-        s <- s+1                          ## Count number of successes
+        if (is.element(k,choice)) {
+          s <- s+1       ## Count number of successes
+          break
+        }
+        else{
+          next
+        }
       }
       count <- count+1                    ## Update counter
       u <- sample(1:(2*n),size=2*n)       ## Reset card orders
@@ -76,6 +80,7 @@ Pone <- function(n,k,strategy,nreps=10000) {
       choice <- sample(1:(2*n),size=n)    ## Choose n boxes at random
       if (is.element(k,choice)) {
         s <- s+1                          ## Count number of successes
+        break
       }
       count <- count+1                    ## Update counter
     }

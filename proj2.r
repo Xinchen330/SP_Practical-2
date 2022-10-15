@@ -90,8 +90,8 @@ Pall <- function(n,strategy,nreps=10000) {
     for (k in 1:(2*n)) {
       result[k] <- trial_outcome(n,k,strategy,cards)
     }
-    ## All prisoners find their numbers if the result vector only has element
-    ## 1, in which case the sum of the elements would be 2n
+    ## All prisoners find their numbers if all elements of the result vector 
+    ## are 1, in which case the sum of the elements would be 2n
     if (sum(result)==(2*n)) {
       s <- s+1
     }

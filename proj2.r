@@ -110,14 +110,19 @@ card_loop <- function(cards) {
   while (is.element(0,status)) {
     k <- min(which(status==0))
     choice[1] <- cards[k]
-    for (i in 2:length(cards)) {
-      if (cards[choice[i-1]]!=k) {
-        choice[i] <- cards[choice[i-1]]
-      }
-      else {
-        choice[i] <- k
-        l <- choice[which(choice!=0)]
-        break
+    if (choice[1]==k) {
+      l <- choice[which(choice!=0)]
+    }
+    else {
+      for (i in 2:length(cards)) {
+        if (cards[choice[i-1]]!=k) {
+          choice[i] <- cards[choice[i-1]]
+        }
+        else {
+          choice[i] <- k
+          l <- choice[which(choice!=0)]
+          break
+        }
       }
     }
     status[l] <- 1 ## Update status

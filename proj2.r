@@ -1,117 +1,103 @@
 # Group 12 Practical 2
-## Group Members: 
-# Xin Chen (s2340094), Yicong Sun (s2445309), Yihong Zhao (s2331659)
+## Group Members: Xin Chen (s2340094)
+##                Yicong Sun (s2445309)
+##                Yihong Zhao (s2331659)
 ## Address of the github repo: 
 ## Contributions: 
 
-# Function Pone for estimating the success probability of a single prisoner
+# Function trial_outcome to determine whether an individual prisoner 
+# can find his/her card number following three different strategies
 # Inputs:
 ## n -- number of trials allowed for each prisoner (2n prisoners)
 ## k -- The prisoner's number
 ## strategy -- three difference strategies:
 ### strategy==1 -- Start at the box with their number on it, if the card number 
-### k is not their number then go to the kth box for their next choice, 
-### repeat this process until the end of the game
+### k is not their number then go to the kth box for their next choice, repeat 
+### this process until the end of the game
 ### strategy==2 -- Start at a random box, then repeat strategy 1
 ### strategy==3 -- Choose n boxes at random
-## nreps.nreps -- number of simulations to estimate success probability, with
-## default value 10000
-# The function Pone returns the estimated success probability 
-# for a single prisoner (based on simulations)
-Pone <- function(n,k,strategy,nreps=10000) {
-  choice <- rep(NA,n)              ## a vector to store choices of the prisoner
-  count <- 1                       ## a counter for number of simulations
-  s <- 0                           ## a counter for number of successes
-  ## Create a vector u to store card numbers
-  ## cards were put into different boxes randomly with equal probabilities
-  ## If only 1 simulation is required,
-  if (nreps==1) {
-    u <- u_fix
-  }
-  ## Otherwise, we can start with any randomly generated card orders
-  else {
-    u <- sample(1:(2*n),size=2*n)
-  }
+## cards -- an (1x2n) vector with shuffled card numbers
+# The function trial_outcome returns 1 if the prisoner finds the number, and
+# returns 0 if he/she fails
+trial_outcome <- function(n,k,strategy,cards) {
+  choice <- rep(NA,n) ## Initialise a vector to store choices of the prisoner
   ## Strategy 1
   if (strategy==1) {
-    while (count <= nreps) {
-      choice[1] <- u[k]            ## Start at the box with their number on it
-      for (i in 2:n) {
-        choice[i] <- u[choice[i-1]]
-        if (is.element(k,choice)) {
-          s <- s+1                 ## Count number of successes
-          break
-        }
-        else{
-          next
-        }
-      }
-      count <- count+1             ## Update counter
-      u <- sample(1:(2*n),size=2*n)## Reset card orders
+    choice[1] <- cards[k] ## Start at the box with their number on it
+    ## Repeat strategy 1 until the end of the game
+    for (i in 2:n) {
+      choice[i] <- cards[choice[i-1]]
     }
-    prob_one <- s/nreps            ## Estimated success probability
-    return(prob_one)               ## Return the estimated probability
   }
   ## Strategy 2
   else if (strategy==2) {
-    while (count <= nreps) {
-      choice[1] <- sample(1:(2*n),size=1) ## Start at a random box
-      for (i in 2:n) {
-        choice[i] <- u[choice[i-1]]
-        if (is.element(k,choice)) {
-          s <- s+1                        ## Count number of successes
-          break
-        }
-        else{
-          next
-        }
-      }
-      count <- count+1                    ## Update counter
-      u <- sample(1:(2*n),size=2*n)       ## Reset card orders
+    choice[1] <- sample(1:(2*n),size=1) ## Start at a random box
+    for (i in 2:n) {
+      choice[i] <- cards[choice[i-1]]
     }
-    prob_one <- s/nreps                   ## Estimated success probability
-    return(prob_one)                      ## Return the estimated probability
   }
   ## Strategy 3
   else {
-    while (count <= nreps) {
-      choice <- sample(1:(2*n),size=n)    ## Choose n boxes at random
-      if (is.element(k,choice)) {
-        s <- s+1                          ## Count number of successes
-        break
-      }
-      count <- count+1                    ## Update counter
-    }
+    choice <- sample(1:(2*n),size=n) ## Choose n boxes at random
   }
-  prob_one <- s/nreps                     ## Estimated success probability
-  return(prob_one)                        ## Return the estimated probability
+  ## Determine whether the trial is successful. 
+  ## The trial was successful if the prisoner picked out k 
+  ## (so that k is an element of the vector choice)
+  if (is.element(k,choice)) {
+    outcome <- 1
+  }
+  else {
+    outcome <- 0
+  }
+  return (outcome)
 }
 
-Pall <- function(n,strategy,nreps=10000) {
-  result <- rep(NA,2*n)                ## a vector to store results of prisoners
-  count <- 1                           ## a counter for number of simulations
-  s <- 0                               ## a counter for number of successes
+# Function Pone for estimating the success probability of a single prisoner
+# Inputs: Arguments (n,k,strategy) are the same as trial_outcome function
+## nreps -- Number of simulations required to estimate success probability, 
+## with default value 10000
+# The function Pone returns the estimated success probability for a single 
+# prisoner (based on simulations)
+Pone <- function(n,k,strategy,nreps=10000) {
+  count <- 1 ## Initialise a counter for number of simulations
+  s <- 0 ## Initialise a counter for number of successes
+  ## Create a vector to store card numbers, cards were put into different 
+  ## boxes randomly with equal probabilities
+  cards <- sample(1:(2*n),size=2*n)
   while (count <= nreps) {
+    s <- s+trial_outcome(n,k,strategy,cards) # Count number of successes
+    count <- count+1 ## Update counter
+    # Reshuffle cards at the end of each simulation
+    cards <- sample(1:(2*n),size=2*n)
+  }
+  prob_one <- s/nreps ## Estimated success probability
+  return(prob_one) ## Return the estimated probability
+}
+
+# Function Pall for estimating the success probability of all prisoners,
+# i.e., all prisoners find their numbers
+# Inputs: Arguments are the same as Pone function, except k
+# The function Pone returns the estimated the joint success probability for
+# all prisoners
+Pall <- function(n,strategy,nreps=10000) {
+  count <- 1 ## Initialise a counter for number of simulations
+  s <- 0 ## Initialise a counter for number of successes
+  ## Create a vector to store card numbers, cards were put into different 
+  ## boxes randomly with equal probabilities
+  cards <- sample(1:(2*n),size=2*n)
+  while (count <= nreps) {
+    result <- rep(NA,2*n) ## Initialise a vector to store results of prisoners
     for (k in 1:(2*n)) {
-      set.seed(count)
-      u_fix <<- sample(1:(2*n),size=2*n)
-      result[k] <- Pone(n,k,strategy,nreps=1)
+      result[k] <- trial_outcome(n,k,strategy,cards)
     }
+    ## All prisoners find their numbers if the result vector only has element
+    ## 1, in which case the sum of the elements would be 2n
     if (sum(result)==(2*n)) {
       s <- s+1
     }
-    count <- count+1                  ## Update counter
-    result <- rep(NA,2*n)             ## Reset the result vector
+    count <- count+1 ## Update counter
+    cards <- sample(1:(2*n),size=2*n) # Reshuffle cards
   }
-  prob_all <- s/nreps         ## Estimated success probability of all prisoners
-  return(prob_all)            ## Return the estimated probability
+  prob_all <- s/nreps ## Estimated success probability of all prisoners
+  return(prob_all) ## Return the estimated probability
 }
-start<-Sys.time();Pall(5,1);end<-Sys.time();runningtime<-end-start;cat(runningtime)
-start<-Sys.time();Pall(5,2);end<-Sys.time();runningtime<-end-start;cat(runningtime)
-start<-Sys.time();Pall(5,3);end<-Sys.time();runningtime<-end-start;cat(runningtime)
-
-start<-Sys.time();Pall(50,1);end<-Sys.time();runningtime<-end-start;cat(runningtime)
-start<-Sys.time();Pall(50,2);end<-Sys.time();runningtime<-end-start;cat(runningtime)
-start<-Sys.time();Pall(50,3);end<-Sys.time();runningtime<-end-start;cat(runningtime)
-
-

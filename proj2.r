@@ -150,3 +150,29 @@ card_loop <- function(cards) {
   }
   return (l_lengths) ## Return loop lengths
 }
+
+# Function dloop for estimating the success probability of each loop length from
+# 1 to 2n occurring at least once in a random shuffling
+# Inputs: Arguments are the same as Pall function, except strategy
+# The function dloop returns 2n-vector representing the probability of each loop
+# length from 1 to 2n occurs at least once
+dloop<-function(n,nreps=10000){
+  loop<-rep(0,2*n) ## Initialise a vector to store the frequency of loop length
+  prob<-rep(0,2*n) ## Initialise a vector to store the probability
+  count<-1 ## Initialise a counter for number of simulations
+ while (count<=nreps){
+    u<-sample(1:(2*n),size = 2*n)
+    ## Use function card_loop to find the lengths of all the loops in this
+    ## simulation.
+    len<-card_loop(u) 
+    ## Use function unique to find the unique loop length
+    unique_len<-unique(len)
+    ## Count the length of the loop in this simulation
+    for (j in 1:length(unique_len)){
+      loop[unique_len[j]]=loop[unique_len[j]]+1
+    }
+    count<-count+1 ## Update counter
+ }
+  prob=loop/nreps  ## Estimated probability
+  return(prob) ##Return the estimated probability
+}

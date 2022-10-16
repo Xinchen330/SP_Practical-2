@@ -179,39 +179,41 @@ dloop<-function(n,nreps=10000){
 
 # Example code for n=5 and n=50
 Pone(5,1,1);Pone(5,1,2);Pone(5,1,3)
-## outcome:[1] 1
-        ## [1] 0.9994
-        ## [1] 1e-04
+## outcome:[1] 0.5079
+        ## [1] 0.4019
+        ## [1] 0.4854
 Pall(5,1);Pall(5,2);Pall(5,3)
-## outcome:[1] 0.3503
+## outcome:[1] 0.3608
         ## [1] 2e-04
-        ## [1] 0.0017
+        ## [1] 9e-04
 Pone(50,1,1);Pone(50,1,2);Pone(50,1,3)
-## outcome:[1] 0.9998
-        ## [1] 0.9998
-        ## [1] 1e-04
-Pall(50,1);Pall(50,2);Pall(50,3)
-## outcome:[1] 0.3185
+## outcome:[1] 0.4972
+        ## [1] 0.3711
+        ## [1] 0.499
+Pall(500,1);Pall(50,2);Pall(50,3)
+## outcome:[1] 0.315
         ## [1] 0
         ## [1] 0
 
 # Comments
-## It is apparent that the individual success probability is convergent to 1 for
-## strategy 1 and strategy 2, and the probability of using strategy 3 is close
-## to zero.
-## As for the total success probability, we could see the probablity of using 
-## strategy 1 is surprisingly higher than 30%, which is completely higher 
-## than the other two strategies (close to zero).
+## It is apparent that the individual success probability is convergent to 0.5 
+## for strategy 1 and strategy 3, and the probability of using strategy 3 is 
+## close to 0.4.
+## As for the total successes probability, we could see the probablity of using 
+## strategy 1 can be seen to be surprisingly high above 0.3, which is completely 
+## higher than the other two strategies (close to zero).
 
 # Example code using dloop to estimate the probabilities for n = 50 
 ## using dloop
+## no loop longer than 50 means maximum length of loop smaller than 50 or equal
+## to 50
 n <- 50
-s <- 0
 nreps <- 10000
-count <- 1 ## Initialise a counter for number of simulations
+s <- 0          ## Initialise a counter for number of successes
+count <- 1      ## Initialise a counter for number of simulations
 while (count <= nreps) {
-  if (max(which(dloop(n,nreps=1)!=0)) <= n){
-    s <- s+1
+  if (max(which(dloop(n,nreps=1)!=0)) <= 50){
+    s <- s+1    ## Record the time of successes
   }
   count <- count +1
 }

@@ -160,7 +160,7 @@ dloop<-function(n,nreps=10000){
   loop<-rep(0,2*n) ## Initialise a vector to store the frequency of loop length
   prob<-rep(0,2*n) ## Initialise a vector to store the probability
   count<-1 ## Initialise a counter for number of simulations
- while (count<=nreps){
+  while (count<=nreps){
     u<-sample(1:(2*n),size = 2*n)
     ## Use function card_loop to find the lengths of all the loops in this
     ## simulation.
@@ -172,7 +172,47 @@ dloop<-function(n,nreps=10000){
       loop[unique_len[i]]=loop[unique_len[i]]+1
     }
     count<-count+1 ## Update counter
- }
+  }
   prob=loop/nreps  ## Estimated probability
   return(prob) ##Return the estimated probability
 }
+
+# Example code for n=5 and n=50
+Pone(5,1,1);Pone(5,1,2);Pone(5,1,3)
+## outcome:[1] 1
+        ## [1] 0.9994
+        ## [1] 1e-04
+Pall(5,1);Pall(5,2);Pall(5,3)
+## outcome:[1] 0.3503
+        ## [1] 2e-04
+        ## [1] 0.0017
+Pone(50,1,1);Pone(50,1,2);Pone(50,1,3)
+## outcome:[1] 0.9998
+        ## [1] 0.9998
+        ## [1] 1e-04
+Pall(50,1);Pall(50,2);Pall(50,3)
+## outcome:[1] 0.3185
+        ## [1] 0
+        ## [1] 0
+
+# Comments
+## It is apparent that the individual success probability is convergent to 1 for
+## strategy 1 and strategy 2, and the probability of using strategy 3 is close
+## to zero.
+## As for the total success probability, we could see the probablity of using 
+## strategy 1 is surprisingly higher than 30%, which is completely higher 
+## than the other two strategies (close to zero).
+
+# Example code using dloop to estimate the probabilities for n = 50 
+## using dloop
+n <- 50
+s <- 0
+nreps <- 10000
+count <- 1 ## Initialise a counter for number of simulations
+while (count <= nreps) {
+  if (max(which(dloop(n,nreps=1)!=0)) <= n){
+    s <- s+1
+  }
+  count <- count +1
+}
+s/nreps ## probability that there is no loop longer than 50

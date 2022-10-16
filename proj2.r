@@ -168,8 +168,8 @@ dloop<-function(n,nreps=10000){
     ## Use function unique to find the unique loop length
     unique_len<-unique(len)
     ## Count the length of the loop in this simulation
-    for (j in 1:length(unique_len)){
-      loop[unique_len[j]]=loop[unique_len[j]]+1
+    for (i in 1:length(unique_len)){
+      loop[unique_len[i]]=loop[unique_len[i]]+1
     }
     count<-count+1 ## Update counter
  }

@@ -261,3 +261,8 @@ while (count <= nreps) {
   count <- count +1 ## Update counter
 }
 s/nreps ## Probability that there is no loop longer than 50
+
+## Visualise the probability that each loop length (from 1 to 2n) occurs at 
+## least once (n=50)
+plot(1:(2*n),dloop(n),type='h',main='Probability of each loop length',
+     ylab='Probability',xlab ='Loop length')

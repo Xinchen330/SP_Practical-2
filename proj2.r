@@ -2,11 +2,25 @@
 ## Group Members: Xin Chen (s2340094)
 ##                Yicong Sun (s2445309)
 ##                Yihong Zhao (s2331659)
-## Address of the github repo: 
+## Address of the github repo: https://github.com/Xinchen330/SP_Practical-2.git
 ## Contributions: 
 
+# Overview:
+## Basic set-up: Suppose that there are 2n prisoners, with each prisoner 
+## being labelled 1 to 2n. There is a room with 2n boxes. A total number 
+## of 2n cards with a unique number between 1 to 2n printed are randomly 
+## shuffled and placed in one of the boxes. Each prisoner is expected to 
+## find their number with a maximum of n trials. If all 2n prisoners 
+## successfully find their numbers, they are freed.
+## The main purpose of this R script is to conduct a simulation study to 
+## estimate the probability of both individual and joint success 
+## probabilities of prisoners, under three different strategies (see below). 
+## In fact, loops occur in the sequence of opened boxes, and we will see 
+## that all prisoners will succeed if all loop lengths within the sequence 
+## are less than or equal to n.
+
 # Function trial_outcome to determine whether an individual prisoner 
-# can find his/her card number following three different strategies
+# can find their card number following three different strategies
 # Inputs:
 ## n -- number of trials allowed for each prisoner (2n prisoners)
 ## k -- The prisoner's number
@@ -18,7 +32,7 @@
 ### strategy==3 -- Choose n boxes at random
 ## cards -- an (1x2n) vector with shuffled card numbers
 # The function trial_outcome returns 1 if the prisoner finds the number, and
-# returns 0 if he/she fails
+# returns 0 if they fail
 trial_outcome <- function(n,k,strategy,cards) {
   choice <- rep(NA,n) ## Initialise a vector to store choices of the prisoner
   ## Strategy 1
@@ -102,6 +116,55 @@ Pall <- function(n,strategy,nreps=10000) {
   return(prob_all) ## Return the estimated probability
 }
 
+## We provide example simulations below using n=5 and n=50. All simulations 
+## repeated nreps=10000 times. When we estimate the individual success 
+## probability, we assume that k=1 (the number one prisoner). However, this 
+## simulation result should hold for all 2n prisoners. Note that the estimated
+## probability might be slightly different if we re-run the code (since orders 
+## of the randomly shuffled cards are not guaranteed to be the same), but the 
+## probabilities should be similar.
+# Example code using n=5
+Pone(5,1,1)
+Pone(5,1,2)
+Pone(5,1,3)
+## outcome: Strategy 1: 0.4998
+## Strategy 2: 0.3977
+## Strategy 3: 0.4957
+Pall(5,1)
+Pall(5,2)
+Pall(5,3)
+## outcome: Strategy 1: 0.3437
+## Strategy 2: 1e-04
+## Strategy 3: 0.0014
+
+# Example code using n=50
+Pone(50,1,1)
+Pone(50,1,2)
+Pone(50,1,3)
+## outcome: Strategy 1: 0.5078
+## Strategy 2: 0.3682
+## Strategy 3: 0.4967
+Pall(50,1)
+Pall(50,2)
+Pall(50,3)
+## outcome: Strategy 1: 0.305
+## Strategy 2: 0
+## Strategy 3: 0
+
+# Comments
+## As we can see from our simulation above, the individual success probability 
+## is almost the same for strategies 1 and 3, around 50%. The success 
+## probability under strategy 2 is marginally lower than other strategies. 
+## However, we can see that the joint success probability under strategy 1 
+## is unexpectedly high, with around 35% with n=5 and 31% with n=50. In 
+## contrast, prisoners are unlikely to succeed under the other two strategies. 
+## This result is not surprising if we realise that prisoners' successes are 
+## not independent events under strategy 1. Under strategy 3, prisoners' 
+## successes are independent events, so the joint success probability is 
+## (1/2)^n, which goes to 0 as n increases. However, as we will see in the 
+## following simulation, loops occur in the sequence of opened boxes. All 
+## prisoners will succeed if there is no loop longer than n.
+
 # Function card_loop for finding the number of loops and the length of each
 # loop in a sequence of randomly shuffled cards
 # Inputs:
@@ -177,44 +240,24 @@ dloop<-function(n,nreps=10000){
   return(prob) ##Return the estimated probability
 }
 
-# Example code for n=5 and n=50
-Pone(5,1,1);Pone(5,1,2);Pone(5,1,3)
-## outcome:[1] 0.5079
-        ## [1] 0.4019
-        ## [1] 0.4854
-Pall(5,1);Pall(5,2);Pall(5,3)
-## outcome:[1] 0.3608
-        ## [1] 2e-04
-        ## [1] 9e-04
-Pone(50,1,1);Pone(50,1,2);Pone(50,1,3)
-## outcome:[1] 0.4972
-        ## [1] 0.3711
-        ## [1] 0.499
-Pall(500,1);Pall(50,2);Pall(50,3)
-## outcome:[1] 0.315
-        ## [1] 0
-        ## [1] 0
-
-# Comments
-## It is apparent that the individual success probability is convergent to 0.5 
-## for strategy 1 and strategy 3, and the probability of using strategy 3 is 
-## close to 0.4.
-## As for the total successes probability, we could see the probablity of using 
-## strategy 1 can be seen to be surprisingly high above 0.3, which is completely 
-## higher than the other two strategies (close to zero).
-
 # Example code using dloop to estimate the probabilities for n = 50 
-## using dloop
-## no loop longer than 50 means maximum length of loop smaller than 50 or equal
-## to 50
-n <- 50
-nreps <- 10000
-s <- 0          ## Initialise a counter for number of successes
-count <- 1      ## Initialise a counter for number of simulations
+# using dloop
+n <- 50 ## Maximum trials allowed
+## Probabilities that each loop length (from 1 to 2n) occurs at least once
+dloop(n)
+
+## Assessing the probability that all loop lengths are not greater than 50
+s <- 0 ## Initialise a counter for number of successes
+nreps <- 10000 ## Estimate the probability by 10000 simulations
+count <- 1 ## Initialise a counter for number of simulations
 while (count <= nreps) {
-  if (max(which(dloop(n,nreps=1)!=0)) <= 50){
-    s <- s+1    ## Record the time of successes
+  ## Use dloop function with nreps=1 will return the loop lengths in one set
+  ## of randomly shuffled cards, we can pick out lengths by extracting 
+  ## non-zero elements
+  ## Succeed if the maximum loop length is no greater than n (50 in this case)
+  if (max(which(dloop(n,nreps=1)!=0)) <= n){
+    s <- s+1
   }
-  count <- count +1
+  count <- count +1 ## Update counter
 }
-s/nreps ## probability that there is no loop longer than 50
+s/nreps ## Probability that there is no loop longer than 50

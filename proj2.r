@@ -2,8 +2,30 @@
 ## Group Members: Xin Chen (s2340094)
 ##                Yicong Sun (s2445309)
 ##                Yihong Zhao (s2331659)
+
 ## Address of the github repo: https://github.com/Xinchen330/SP_Practical-2.git
-## Contributions: 
+
+## Contributions:
+## Similar to project 1, we aim to divide the whole project into three roughly 
+## equal tasks. Each group member is mainly responsible for a particular 
+## programming task, and the other two are actively engaged in planning code 
+## writing and ensuring the code functions as expected.
+
+## Yicong contributes to the project by writing two functions trial_outcome and
+## card_loop, to ensure the codes are well-structured and avoid unnecessarily 
+## copy codes between functions.
+
+## Xin picked up from the trial_outcome function to write two other functions, 
+## Pone and Pall, for estimating prisoners' individual and joint success 
+## probabilities.
+
+## Yihong worked on the dloop function to estimate the probabilities of loop 
+## length, using the dloop function to create suitable visualisation for 
+## corresponding probabilities and estimate the probability that no loop is 
+## longer than 50.
+
+## We worked together to provide estimate success probabilities using Pone and 
+## Pall, discussed interesting patterns and wrote up findings.
 
 # Overview:
 ## Basic set-up: Suppose that there are 2n prisoners, with each prisoner 
@@ -25,7 +47,7 @@
 ## n -- number of trials allowed for each prisoner (2n prisoners)
 ## k -- The prisoner's number
 ## strategy -- three difference strategies:
-### strategy==1 -- Start at the box with their number on it, if the card number 
+### strategy==1 -- Start at the box with their number on it, if the card number
 ### k is not their number then go to the kth box for their next choice, repeat 
 ### this process until the end of the game
 ### strategy==2 -- Start at a random box, then repeat strategy 1
@@ -214,11 +236,11 @@ card_loop <- function(cards) {
   return (l_lengths) ## Return loop lengths
 }
 
-# Function dloop for estimating the success probability of each loop length from
-# 1 to 2n occurring at least once in a random shuffling
+# Function dloop for estimating the success probability of each loop length 
+# from 1 to 2n occurring at least once in a random shuffling
 # Inputs: Arguments are the same as Pall function, except strategy
-# The function dloop returns 2n-vector representing the probability of each loop
-# length from 1 to 2n occurs at least once
+# The function dloop returns 2n-vector representing the probability of each 
+# loop length from 1 to 2n occurs at least once
 dloop<-function(n,nreps=10000){
   loop<-rep(0,2*n) ## Initialise a vector to store the frequency of loop length
   prob<-rep(0,2*n) ## Initialise a vector to store the probability
@@ -243,7 +265,7 @@ dloop<-function(n,nreps=10000){
 # Example code using dloop to estimate the probabilities for n = 50 
 # using dloop
 n <- 50 ## Maximum trials allowed
-## Probabilities that each loop length (from 1 to 2n) occurs at least once
+## The probability that each loop length (from 1 to 2n) occurs at least once
 dloop(n)
 
 ## Assessing the probability that all loop lengths are not greater than 50
@@ -264,5 +286,5 @@ s/nreps ## Probability that there is no loop longer than 50
 
 ## Visualise the probability that each loop length (from 1 to 2n) occurs at 
 ## least once (n=50)
-plot(1:(2*n),dloop(n),type='h',main='Probability of each loop length',
+plot(1:(2*n),dloop(n),type='h',main='Probability of each loop length occuring',
      ylab='Probability',xlab ='Loop length')
